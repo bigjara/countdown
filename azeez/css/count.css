@@ -1,0 +1,9 @@
+body{
+	background: #fff
+	padding-top: 2rem;
+}
+h1, div {
+	text-align: center;
+	font-size: 3rem;
+	font-family: sans-serif;
+}
