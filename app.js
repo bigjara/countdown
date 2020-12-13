@@ -1,70 +1,102 @@
-//! A countdown application using Vanilla JS
-//! Three classes will be used to represent the view , model , and controller 
+/**
+ * Project : Countdown.js 
+ * Author  : Bigjara 
+ * Contributors : Adeleke Bright
+ */
+
+// Model holds the template for creating and getting the time for our future event 
 class Model { 
-    //Set the future event when the model is called 
-	constructor(){
-		this.futureEvent = new Date('Dec 25 , 2020 00:00:00 GMT+01:00').getTime() 	
+	/**
+	 * 
+	 * @param {String | Number} year 
+	 * @param {String | Number} month 
+	 * @param {String | Number} date 
+	 * @param {String | Number} hour 
+	 * @param {String | Number} minute 
+	 * @param {String | Number} second 
+	 */
+	constructor(year , month , date , hour , minute , second){
+        this.year = year 
+        this.month = month 
+        this.date = date 
+        this.hour = hour 
+        this.minute = minute 
+        this.second = second 
 	} 
-		
+	/**
+	 * @description 
+	 * returns the date of the future event
+	 */
+    createDate(){
+        return new Date(this.year , this.month , this.date , this.hour , this.minute , this.second)
+	}
+	/**
+	 * @description 
+	 * returns the timestamp for the event
+	 */
+	getTime = () => this.createDate().getTime() 	
 } 
 
-//! The view 
+//! View provids the template for accessing and manipulating the DOM
 class View {
 	constructor() {
-		this.root = this.getElement('#root') //The root element for the app  
+		this.root = this.getElement('#root')   //The root element for the app  
 		this.span = this.createElement('span') // The countdown will display inside this span 
 		this.title = this.createElement('h1')  // The title for the page 
 		this.root.append(this.title , this.span)
-		//this.root.appendChild(this.span)       // Append the countdown to the root element 
-		//this.root.insertBefore(this.title , this.span) //Insert the title before the countdown 
 	}
-	//! A method for creating element 
 	createElement(tag){
 		return document.createElement(tag) 
-	} 
-	//! A method for selecting element 
+	}
 	getElement(selector){
 		return document.querySelector(selector)
 	}
 }
 
-//! Class controller for handling event especially when dom is loaded 
 class Controller {
-	constructor(){
-		this.model = new Model() 
+	constructor(eventName , boomMessage){
+		this.model = new Model("2020" , "11" , "25" , 0 , 0, 0)  
 		this.view =  new View()
-		this.view.title.textContent = 'Countdown to Christmas Celebration'  
-		
-		//!Attach a timer id that can be used for stopping the timer 
-		this.timerId = setInterval(() => {
-			this.diff        = this.model.futureEvent - new Date().getTime()  //Get the time difference in ms
+		this.view.title.textContent = eventName 
+		this.boomMessage = boomMessage  
+		this.launchCountDown()
+	}
+	launchCountDown(){
+		//!Attach a timer id that can be used for stopping the countdown 
+	    this.timerId = setInterval( () => { 
 			
-			this.days = Math.floor(this.diff/(1000*60*60*24)) //Get the number of milliseconds in one day 
-			this.hours = Math.floor((this.diff%(1000*60*60*24))/(1000*60*60)) //Get the hours 
-			this.minutes = Math.floor((this.diff%(1000*60*60))/(1000*60)) 
-			this.seconds = Math.floor((this.diff%(1000*60))/(1000))  
+			this.timeGap      = this.model.getTime() - new Date().getTime()  //Get the time timeGaperence in ms
+			
+			this.days         = Math.floor(this.timeGap/(1000*60*60*24)) 
+			this.hours 		  = Math.floor((this.timeGap%(1000*60*60*24))/(1000*60*60)) 
+			this.minutes 	  = Math.floor((this.timeGap%(1000*60*60))/(1000*60)) 
+			this.seconds 	  = Math.floor((this.timeGap%(1000*60))/(1000))  
 			
 			//!Append a zero to seconds if less than 10 
 			this.seconds = this.seconds < 10 ? '0'+this.seconds : this.seconds 
+			
 			//display the time within the span 
 			this.view.span.textContent = 
 			`${this.days}days : ${this.hours}hours : ${this.minutes}mins :${this.seconds}sec` 
 			
-			if ( this.diff <= 0) {
+			if ( this.timeGap <= 0) {
 				clearInterval(this.timerId)
-				this.view.span.textContent = 'Merry Christmas' 
+				this.view.span.textContent = this.boomMessage
 				this.view.span.style.color = '#f00'
 			}
 			
 			//!Change the color of the text by checking if the seconds is divisible by two 
 			//! This is conditional rendering 
 			this.view.span.style.color = parseInt(this.seconds)%2 === 0 ? '#f00' : '#00f' 
-		} , 1000)
-		//this.view.root
-	} 
+		} , 1000) 
+    } 
+
+
+		
+	
 	
 } 
 
-new Controller() 
+new Controller("Countdown to Ipenko Odun's Birthday" , "Happy Birthday") 
 
 
